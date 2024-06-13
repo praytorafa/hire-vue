@@ -197,7 +197,7 @@
   margin-bottom: 6px;
 }
 
-textarea {
+.textarea {
   width: 100%;
 
   color: #002240;
@@ -209,9 +209,9 @@ textarea {
   border: none;
   outline: none;
   resize: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
-/* textarea::-webkit-scrollbar {
+/* .textarea::-webkit-scrollbar {
   height: 12px !important;
   max-height: 12px !important;
   width: 0.5rem;
@@ -219,28 +219,28 @@ textarea {
   border-radius: 14px;
   cursor: pointer !important;
 }
-textarea::-webkit-scrollbar-thumb {
+.textarea::-webkit-scrollbar-thumb {
   height: 12px !important;
   max-height: 12px !important;
   cursor: pointer !important;
 } */
 
-textarea::-webkit-scrollbar {
+.textarea::-webkit-scrollbar {
   height: 1rem;
   width: 0.5rem;
 }
 
-textarea::-webkit-scrollbar:horizontal {
+.textarea::-webkit-scrollbar:horizontal {
   height: 0.5rem;
   width: 1rem;
 }
 
-textarea::-webkit-scrollbar-track {
+.textarea::-webkit-scrollbar-track {
   background-color: transparent;
   border-radius: 9999px;
 }
 
-textarea::-webkit-scrollbar-thumb {
+.textarea::-webkit-scrollbar-thumb {
   --tw-border-opacity: 1;
   background-color: #002240;
   border-color: rgba(255, 255, 255, var(--tw-border-opacity));
@@ -248,17 +248,17 @@ textarea::-webkit-scrollbar-thumb {
   border-width: 1px;
 }
 
-textarea::-webkit-scrollbar-thumb:hover {
+.textarea::-webkit-scrollbar-thumb:hover {
   --tw-bg-opacity: 1;
   background-color: rgba(236, 236, 241, var(--tw-bg-opacity));
 }
 
-textarea::-webkit-scrollbar-thumb {
+.textarea::-webkit-scrollbar-thumb {
   --tw-bg-opacity: 1;
   background-color: #002240;
 }
 
-textarea::-webkit-scrollbar-thumb:hover {
+.textarea::-webkit-scrollbar-thumb:hover {
   --tw-bg-opacity: 1;
   background-color: rgba(204, 239, 247, 0.928);
 }

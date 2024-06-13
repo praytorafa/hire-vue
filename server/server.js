@@ -8,12 +8,15 @@ import verifyToken from "./middleware/verifyToken.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const app = express();
 app.use(cors());
@@ -417,7 +420,7 @@ app.post("/", verifyToken, async (req, res) => {
   try {
     const { prompt, organizationName, sessionId } = req.body;
 
-    // Fetch interview questions from the database
+    // Fetch interview questions from the database (unchanged)
     const interview = await Interview.findOne({ organizationName });
 
     if (!interview) {
@@ -426,61 +429,53 @@ app.post("/", verifyToken, async (req, res) => {
       });
     }
 
-    if (!interviewSessions[sessionId]) {
-      // Initialize a new session if it doesn't exist
-      interviewSessions[sessionId] = {
-        questions: [
-          ...interview.interviewQuestions,
-          "Thank you, this interview is now concluded",
-        ],
-        conversationHistory: [
+    const interviewQuestions = interview.interviewQuestions;
+
+    // const interviewQuestions = [
+    //   ...initialInterviewQuestions,
+    //   "Thank you, this interview is now concluded. You have scored {something} percent",
+    // ];
+
+    // Build conversation history with Gemini format
+    const conversationHistory = [
+      { role: "user", parts: [{ text: prompt }] }, // User's initial prompt
+      {
+        role: "model",
+        parts: [
           {
-            role: "system",
-            content: `You are conducting an interview. MAKE SURE TO ADD THE CANDIDATES SCORE IN THE FINAL MESSAGE. You will ask a total of ${interview.interviewQuestions.length} questions and nothing more, with the last message being a final message to the user, DO NOT REPEAT QUESTIONS. TAKE NOTE OF THE CONVERSATION AND DEDUCE A PERCENTAGE SCORE BASED ON THE USER'S RESPONSE TO ALL THE QUESTIONS AND INCLUDE THE SCORE IN THE {SOMETHING} BRACKET OF THE LAST TEXT STRING IN THE QUESTIONS LIST.`,
+            text: `You are conducting an interview with a total of ${
+              interviewQuestions.length
+            } questions. The last question includes a score placeholder. DO NOT REPEAT QUESTIONS. TAKE NOTE OF THE CONVERSATION AND DEDUCE A PERCENTAGE SCORE BASED ON THE USER'S RESPONSE TO ALL THE QUESTIONS AND INCLUDE THE SCORE IN THE {SOMETHING} BRACKET OF THE LAST TEXT STRING IN THE QUESTIONS LIST. END THE INTERVIEW BY DISPLAYING THE SCORE PLACEHOLDER.   Questions: ${interviewQuestions.join(
+              ", "
+            )}`,
           },
-          { role: "assistant", content: "follow the instructions" },
         ],
-        currentQuestionIndex: 0,
-      };
-    }
+      }, // System message explaining interview details
+    ];
 
-    const session = interviewSessions[sessionId];
-    const currentQuestion = session.questions[session.currentQuestionIndex];
+    // Choose a suitable Gemini model for chat-like interactions
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Replace with appropriate model if needed
 
-    session.conversationHistory.push({ role: "user", content: prompt });
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        ...session.conversationHistory,
-        { role: "assistant", content: currentQuestion },
-      ],
-      temperature: 0,
-      max_tokens: 400,
-      top_p: 1,
-      frequency_penalty: 0.5,
-      presence_penalty: 0,
+    // Start chat session with Gemini
+    const chat = await model.startChat({
+      history: conversationHistory,
+      generationConfig: {
+        maxOutputTokens: 400, // Adjust max output length if needed
+      },
     });
 
-    // Append assistant message to conversation history
-    session.conversationHistory.push({
+    // Send initial assistant message using sendMessage
+    const assistantResponse = await chat.sendMessage(prompt); // Use prompt for initial assistant message
+    const assistantContent = await assistantResponse.response.text();
+
+    conversationHistory.push({
       role: "assistant",
-      content: response.choices[0].message.content,
+      content: { parts: [{ text: assistantContent }] },
     });
-
-    session.currentQuestionIndex++;
 
     res.status(200).send({
-      bot: response.choices[0].message.content,
-      nextQuestion: session.questions[session.currentQuestionIndex] || null,
-      interviewConcluded:
-        session.currentQuestionIndex >= session.questions.length,
+      bot: assistantContent,
     });
-
-    // Optionally clean up the session if the interview is concluded
-    if (session.currentQuestionIndex >= session.questions.length) {
-      delete interviewSessions[sessionId];
-    }
   } catch (error) {
     console.log(error);
     res.status(500).send({ error });

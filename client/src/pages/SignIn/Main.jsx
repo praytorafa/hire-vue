@@ -1,13 +1,13 @@
 import React, { useRef, useState } from "react";
-import "./_Main.scss";
+import "../SignUp/_Main.scss";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import { IoIosMail } from "react-icons/io";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
-import Toast from "../../components/Toast/Toast";
 import Loader from "../../components/Icons/Loader";
+import Toast from "../../components/Toast/Toast";
 
-const Signup = () => {
+const SignIn = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
@@ -34,7 +34,7 @@ const Signup = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -233,11 +233,11 @@ const Signup = () => {
             </div>
           </div>
           <button className="login" onClick={handleSubmit} disabled={loading}>
-            {loading ? <Loader /> : " Sign Up"}
+            {loading ? <Loader /> : "Login"}
           </button>
           <div className="footer">
-            <Link to={"/signin"} style={{ textDecoration: "none" }}>
-              <span>Sign In</span>
+            <Link to={"/signup"} style={{ textDecoration: "none" }}>
+              <span>Sign Up</span>
             </Link>
             <span>Forgot Password?</span>
           </div>
@@ -247,4 +247,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignIn;

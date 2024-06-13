@@ -27,6 +27,7 @@ $distance: -1px;
       top: -30%;
       right: 0;
       bottom: unset;
+      display: none;
     }
 
     > div {
@@ -68,6 +69,7 @@ $distance: -1px;
       z-index: -1;
       @media screen and (max-width: 800px) {
         top: -70%;
+        display: none;
       }
       > div {
         background-color: #3444da;

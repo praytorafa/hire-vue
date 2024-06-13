@@ -22,7 +22,7 @@ const AdminModal = ({ setShowModal }) => {
       .filter((question) => question !== "");
     try {
       const response = await fetch(
-        "https://hire-vue.onrender.com/interview-questions",
+        "http://localhost:5000/interview-questions",
         {
           method: "POST",
           headers: {

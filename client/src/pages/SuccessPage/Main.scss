@@ -1,0 +1,95 @@
+.success-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  min-height: 100vh;
+  padding: 0 40px;
+  .success-animation {
+    .checkmark {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 2;
+      stroke: #3444da;
+      stroke-miterlimit: 10;
+      box-shadow: inset 0px 0px 0px #3444da;
+      animation: fill 0.4s ease-in-out 0.4s forwards,
+        scale 0.3s ease-in-out 0.9s both;
+      position: relative;
+      top: 5px;
+      right: 5px;
+      margin: 0 auto;
+    }
+    .checkmark__circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: #3444da;
+      fill: #1f2343;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark__check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+  }
+  .success-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    > h3 {
+      font-size: 48px;
+      color: white;
+      font-weight: 500;
+      width: 80%;
+      @media screen and (max-width: 800px) {
+        font-size: 32px;
+        width: 90%;
+      }
+    }
+    > p {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: #b2b2c1;
+      text-align: center;
+
+      @media screen and (max-width: 800px) {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #3444da;
+  }
+}
